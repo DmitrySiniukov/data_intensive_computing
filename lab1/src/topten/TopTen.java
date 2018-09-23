@@ -69,7 +69,7 @@ public class TopTen {
 			// Output our ten records to the reducers with a null key
 			//int count = 0;
 			for (Entry<Integer, Text> entry : repToRecordMap.descendingMap().entrySet()) {
-				context.write(new NullWritable(), entry.getValue());
+				context.write(NullWritable.get(), entry.getValue());
 				//if (++count == 10) {
 				//	break;
 				//}
@@ -113,7 +113,7 @@ public class TopTen {
 
 		Configuration conf = new Configuration();
 		Job job = Job.getInstance(conf, "top10");
-		job.setNumReduceTasks(1)
+		job.setNumReduceTasks(1);
 		job.setJarByClass(TopTen.class);
 		job.setMapperClass(TopTenMapper.class);
 		job.setCombinerClass(TopTenReducer.class);
