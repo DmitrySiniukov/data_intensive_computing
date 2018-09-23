@@ -101,15 +101,15 @@ public class TopTen {
 
 		protected void cleanup(Context context) throws IOException, InterruptedException {
 
-			Integer count = 1;
+			Integer count = 0;
 			for (Entry<Integer, Text> entry : repToRecordMap.descendingMap().entrySet()) {
 				Map<String, String> row = transformXmlToMap(entry.getValue().toString());
 				String rep = row.get("Reputation");
 				String id = row.get("Id");
 
 				Put insHBase = new Put(new Text((count++).toString()).getBytes());
-				insHBase.addColumn(Bytes.toBytes("info"), Bytes.toBytes("id"), Bytes.toBytes(Integer.parseInt(id)));
-				insHBase.addColumn(Bytes.toBytes("info"), Bytes.toBytes("rep"), Bytes.toBytes(Integer.parseInt(rep)));
+				insHBase.addColumn(Bytes.toBytes("info"), Bytes.toBytes("id"), Bytes.toBytes((id)));
+				insHBase.addColumn(Bytes.toBytes("info"), Bytes.toBytes("rep"), Bytes.toBytes((rep)));
 				context.write(NullWritable.get(), insHBase);
 			}
 		}
@@ -129,8 +129,8 @@ public class TopTen {
 
 		//job.setCombinerClass(TopTenReducer.class);
 		job.setReducerClass(TopTenReducer.class);
-		//job.setOutputKeyClass(NullWritable.class);
-		//job.setOutputValueClass(Text.class);
+		job.setOutputKeyClass(NullWritable.class);
+		job.setOutputValueClass(Text.class);
 
 		// define scan and define column families to scan
 		//Scan scan = new Scan();
