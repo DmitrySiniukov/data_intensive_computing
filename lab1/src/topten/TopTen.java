@@ -54,17 +54,18 @@ public class TopTen {
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 			
 			Map<String, String> row = transformXmlToMap(value.toString());
-
 			String id = row.get("Id");
-			String rep = row.get("Reputation");
 
 			// If id is null or an empty string
 			if (id == null || id == "") {
 				return;
 			}
 
+			String rep = row.get("Reputation");
+
 			repToRecordMap.put(Integer.parseInt(rep), new Text(value));
 
+			// Keeping only top 10 values
 			if (repToRecordMap.size() > 10) {
 				repToRecordMap.remove(repToRecordMap.firstKey());
 			}
@@ -72,11 +73,10 @@ public class TopTen {
 
 		protected void cleanup(Context context) throws IOException, InterruptedException {
 			// Output our ten records to the reducers with a null key
-			//int count = 0;
 			/*for (Entry<Integer, Text> entry : repToRecordMap.descendingMap().entrySet()) {
 				context.write(NullWritable.get(), entry.getValue());
 			}*/
-			for (Text information : repToRecordMap.values()) {
+			for (Text information : repToRecordMap.descendingMap().values()) {
 				context.write(NullWritable.get(), information);
 			}
 			//repToRecordMap.clear();
@@ -93,6 +93,7 @@ public class TopTen {
 				Map<String, String> row = transformXmlToMap(val.toString());
 				String rep = row.get("Reputation");
 				repToRecordMap.put(Integer.parseInt(rep), new Text(val));
+				// Keeping only top 10
 				if (repToRecordMap.size() > 10) {
 					repToRecordMap.remove(repToRecordMap.firstKey());
 				}
@@ -102,12 +103,13 @@ public class TopTen {
 		protected void cleanup(Context context) throws IOException, InterruptedException {
 
 			Integer count = 0;
+			// Inserting the result into the table
 			for (Entry<Integer, Text> entry : repToRecordMap.descendingMap().entrySet()) {
 				Map<String, String> row = transformXmlToMap(entry.getValue().toString());
 				String rep = row.get("Reputation");
 				String id = row.get("Id");
 
-				Put insHBase = new Put(new Text((count++).toString()).getBytes());
+				Put insHBase = new Put(new Text((++count).toString()).getBytes()); // Id is the position
 				insHBase.addColumn(Bytes.toBytes("info"), Bytes.toBytes("id"), Bytes.toBytes((id)));
 				insHBase.addColumn(Bytes.toBytes("info"), Bytes.toBytes("rep"), Bytes.toBytes((rep)));
 				context.write(NullWritable.get(), insHBase);
@@ -119,6 +121,8 @@ public class TopTen {
 
 		Configuration conf = new Configuration();
 		Job job = Job.getInstance(conf, "top10");
+		
+		// Number of reducers should be 1
 		job.setNumReduceTasks(1);
 
 		job.setJarByClass(TopTen.class);
@@ -131,10 +135,6 @@ public class TopTen {
 		job.setReducerClass(TopTenReducer.class);
 		job.setOutputKeyClass(NullWritable.class);
 		job.setOutputValueClass(Text.class);
-
-		// define scan and define column families to scan
-		//Scan scan = new Scan();
-		//scan.addFamily(Bytes.toBytes("info"));
 
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 
