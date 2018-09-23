@@ -101,10 +101,10 @@ public class TopTen {
 				String rep = row.get("Reputation");
 				String id = row.get("Id");
 
-				Put insHBase = new Put(NullWritable.get());
+				Put insHBase = new Put(new Text((count++).toString()).getBytes());
 				insHBase.addColumn(Bytes.toBytes("info"), Bytes.toBytes("id"), Bytes.toBytes(Integer.parseInt(id)));
 				insHBase.addColumn(Bytes.toBytes("info"), Bytes.toBytes("rep"), Bytes.toBytes(Integer.parseInt(rep)));
-				context.write(null, insHBase);
+				context.write(NullWritable.get(), insHBase);
 			}
 		}
     }
