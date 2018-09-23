@@ -52,14 +52,19 @@ public class TopTen {
 		TreeMap<Integer, Text> repToRecordMap = new TreeMap<Integer, Text>();
 
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
+			
 			Map<String, String> row = transformXmlToMap(value.toString());
+
 			String id = row.get("Id");
+			String rep = row.get("Reputation");
+
+			// If id is null or an empty string
 			if (id == null || id == "") {
 				return;
 			}
 
-			String rep = row.get("Reputation");
-			repToRecordMap.put(Integer.parseInt(rep), value);
+			repToRecordMap.put(Integer.parseInt(rep), new Text(value));
+
 			if (repToRecordMap.size() > 10) {
 				repToRecordMap.remove(repToRecordMap.firstKey());
 			}
@@ -68,13 +73,13 @@ public class TopTen {
 		protected void cleanup(Context context) throws IOException, InterruptedException {
 			// Output our ten records to the reducers with a null key
 			//int count = 0;
-			for (Entry<Integer, Text> entry : repToRecordMap.descendingMap().entrySet()) {
+			/*for (Entry<Integer, Text> entry : repToRecordMap.descendingMap().entrySet()) {
 				context.write(NullWritable.get(), entry.getValue());
-				//if (++count == 10) {
-				//	break;
-				//}
+			}*/
+			for (Text information : repToRecordMap.values()) {
+				context.write(NullWritable.get(), information);
 			}
-			repToRecordMap.clear();
+			//repToRecordMap.clear();
 		}
     }
 
@@ -83,10 +88,11 @@ public class TopTen {
 		private TreeMap<Integer, Text> repToRecordMap = new TreeMap<Integer, Text>();
 
 		public void reduce(NullWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+			
 			for (Text val : values) {
 				Map<String, String> row = transformXmlToMap(val.toString());
 				String rep = row.get("Reputation");
-				repToRecordMap.put(Integer.parseInt(rep), val);
+				repToRecordMap.put(Integer.parseInt(rep), new Text(val));
 				if (repToRecordMap.size() > 10) {
 					repToRecordMap.remove(repToRecordMap.firstKey());
 				}
@@ -114,55 +120,26 @@ public class TopTen {
 		Configuration conf = new Configuration();
 		Job job = Job.getInstance(conf, "top10");
 		job.setNumReduceTasks(1);
+
 		job.setJarByClass(TopTen.class);
+
 		job.setMapperClass(TopTenMapper.class);
-		job.setCombinerClass(TopTenReducer.class);
+		job.setMapOutputKeyClass(NullWritable.class);
+		job.setMapOutputValueClass(Text.class);
+
+		//job.setCombinerClass(TopTenReducer.class);
 		job.setReducerClass(TopTenReducer.class);
-		job.setOutputKeyClass(NullWritable.class);
-		job.setOutputValueClass(Text.class);
+		//job.setOutputKeyClass(NullWritable.class);
+		//job.setOutputValueClass(Text.class);
 
 		// define scan and define column families to scan
-		Scan scan = new Scan();
-		scan.addFamily(Bytes.toBytes("info"));
+		//Scan scan = new Scan();
+		//scan.addFamily(Bytes.toBytes("info"));
 
 		FileInputFormat.addInputPath(job, new Path(args[0]));
-		//FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
 		TableMapReduceUtil.initTableReducerJob("topten", TopTenReducer.class, job);
 		job.waitForCompletion(true);
 
-    	/*
-
-		// WordCount
-		Configuration conf = new Configuration();
-		Job job = Job.getInstance(conf, "word count");
-		job.setJarByClass(WordCount.class);
-		job.setMapperClass(TokenizerMapper.class);
-		job.setCombinerClass(IntSumReducer.class);
-		job.setReducerClass(IntSumReducer.class);
-		job.setOutputKeyClass(Text.class);
-		job.setOutputValueClass(IntWritable.class);
-		FileInputFormat.addInputPath(job, new Path(args[0]));
-		FileOutputFormat.setOutputPath(job, new Path(args[1]));
-		System.exit(job.waitForCompletion(true) ? 0 : 1);
-
-
-
-    	 // HBase
-		 Configuration conf = HBaseConfiguration.create();
-		 // define scan and define column families to scan
-		 Scan scan = new Scan();
-		 scan.addFamily(Bytes.toBytes("cf"));
-		 Job job = Job.getInstance(conf);
-		 job.setJarByClass(HBaseMapReduce.class);
-		 // define input hbase table
-		 TableMapReduceUtil.initTableMapperJob("test1", scan, hbaseMapper.class, Text.class, IntWritable.class, job);
-		 // define output table
-		 TableMapReduceUtil.initTableReducerJob("test2", hbaseReducer.class, job);
-		 job.waitForCompletion(true);
-    	*
-    	* */
-
-		//job.setNumReduceTasks(1)
     }
 }
