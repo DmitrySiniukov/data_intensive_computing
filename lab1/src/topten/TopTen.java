@@ -54,7 +54,7 @@ public class TopTen {
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 			Map<String, String> row = transformXmlToMap(value.toString());
 			String id = row.get("Id");
-			if (id == null) {
+			if (id == null || id == "") {
 				return;
 			}
 
@@ -101,7 +101,7 @@ public class TopTen {
 				String rep = row.get("Reputation");
 				String id = row.get("Id");
 
-				Put insHBase = new Put(new Text((count++).toString()).getBytes());
+				Put insHBase = new Put(NullWritable.get());
 				insHBase.addColumn(Bytes.toBytes("info"), Bytes.toBytes("id"), Bytes.toBytes(Integer.parseInt(id)));
 				insHBase.addColumn(Bytes.toBytes("info"), Bytes.toBytes("rep"), Bytes.toBytes(Integer.parseInt(rep)));
 				context.write(null, insHBase);
@@ -118,8 +118,8 @@ public class TopTen {
 		job.setMapperClass(TopTenMapper.class);
 		job.setCombinerClass(TopTenReducer.class);
 		job.setReducerClass(TopTenReducer.class);
-		//job.setOutputKeyClass(Text.class);
-		//job.setOutputValueClass(IntWritable.class);
+		job.setOutputKeyClass(NullWritable.class);
+		job.setOutputValueClass(Text.class);
 
 		// define scan and define column families to scan
 		Scan scan = new Scan();
