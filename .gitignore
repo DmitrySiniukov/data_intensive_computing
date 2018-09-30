@@ -2,3 +2,5 @@
 *.idea
 *.class
 *.jar
+./lab2/src/notebooks/data
+./lab2/src/hellospark
