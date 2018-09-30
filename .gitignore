@@ -2,5 +2,6 @@
 *.idea
 *.class
 *.jar
-./lab2/src/notebooks/data
-./lab2/src/hellospark
+./lab2/src/notebooks/data/
+./lab2/src/hellospark/
+./lab2/src/notebooks/.ipynb_checkpoints/
