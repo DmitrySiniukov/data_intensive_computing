@@ -27,7 +27,6 @@ object KafkaSpark {
     session.execute("CREATE TABLE IF NOT EXISTS avg_space.avg (word text PRIMARY KEY, count float);")
 
     // make a connection to Kafka and read (key, value) pairs from it
-    <FILL IN>
     val kafkaConf = Map(
       "metadata.broker.list" -> "localhost:9092",
       "zookeeper.connect" -> "localhost:2181",
@@ -35,7 +34,9 @@ object KafkaSpark {
       "zookeeper.connection.timeout.ms" -> "1000")
     //val kafkaConf = Map[String, String]("metadata.broker.list" -> "localhost:9092")
 
+    val conf = new SparkConf().setMaster("local[*]").setAppName("blabla")
     val ssc = new StreamingContext(conf, Seconds(1))
+    ssc.checkpoint("checkpoint")
     val topicsSet = "avg".split(",").toSet
 
     //val messages = KafkaUtils.createDirectStream.<FILL IN>
@@ -49,7 +50,7 @@ object KafkaSpark {
 	    //<FILL IN>
 
     }
-    val stateDstream = pairs.mapWithState(<FILL IN>)
+    val stateDstream = pairs.mapWithState(StateSpec.function(updateFunc))
 
     // store the result in Cassandra
     stateDstream.saveToCassandra("test", "words", SomeColumns("word", "count")
