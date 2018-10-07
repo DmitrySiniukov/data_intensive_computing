@@ -42,18 +42,22 @@ object KafkaSpark {
     //val messages = KafkaUtils.createDirectStream.<FILL IN>
     val kafkaStream = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
                       ssc, kafkaConf, topicsSet)
-
-    //<FILL IN>
-
+    val pairs = kafkaStream.map(msg => (msg._2)).map(x => (x.split(",")(0), x.split(",")(1).toDouble))
+    
     // measure the average value for each key in a stateful manner
     def mappingFunc(key: String, value: Option[Double], state: State[Double]): (String, Double) = {
-	    //<FILL IN>
+        
+      val avg = (value.getOrElse(0.0) + state.getOption.getOrElse(0.0)) / 2
+      val output = (key, avg)
+      state.update(avg)
 
+      output
     }
-    val stateDstream = pairs.mapWithState(StateSpec.function(updateFunc))
+    val stateDstream = pairs.mapWithState(StateSpec.function(mappingFunc _))
 
     // store the result in Cassandra
-    stateDstream.saveToCassandra("test", "words", SomeColumns("word", "count")
+    stateDstream.foreachRDD(entry => entry.saveToCassandra("test", "words", SomeColumns("word", "count")))
+    //stateDstream.saveToCassandra("test", "words", SomeColumns("word", "count")
 
     ssc.start()
     ssc.awaitTermination()
