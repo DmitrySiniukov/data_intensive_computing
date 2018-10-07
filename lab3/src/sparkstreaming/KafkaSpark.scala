@@ -56,7 +56,7 @@ object KafkaSpark {
     val stateDstream = pairs.mapWithState(StateSpec.function(mappingFunc _))
 
     // store the result in Cassandra
-    stateDstream.foreachRDD(entry => entry.saveToCassandra("avg_space", "words", SomeColumns("word", "count")))
+    stateDstream.foreachRDD(entry => entry.saveToCassandra("avg_space", "avg", SomeColumns("word", "count")))
     //stateDstream.saveToCassandra("test", "words", SomeColumns("word", "count")
 
     ssc.start()
