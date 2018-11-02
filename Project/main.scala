@@ -15,7 +15,7 @@ object Test {
       //val spark = SparkSession.builder.setMaster("local").appName("TwitterSentimentAnalysis").getOrCreate()
       //val sc = spark.sparkContext
       val conf = new SparkConf().setMaster("local[*]").setAppName("twitter-sentiment-analysis")
-      val ssc = new StreamingContext(conf, Seconds(20))
+      val ssc = new StreamingContext(conf, Seconds(10))
       //import spark.implicits._
 
       // From Spark 2.0.0 to onward use SparkSession (managing Context)
@@ -35,6 +35,9 @@ object Test {
       val twitterStream = TwitterUtils.createStream(ssc, None, filters)
       val englishTweets = twitterStream.filter(_.getLang == "en")
       englishTweets.map(_.getText).print()
+
+      ssc.start()
+      ssc.awaitTermination()
    }
 }
 
