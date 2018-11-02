@@ -16,6 +16,9 @@ object Test {
       //val sc = spark.sparkContext
       val conf = new SparkConf().setMaster("local[*]").setAppName("twitter-sentiment-analysis")
       val ssc = new StreamingContext(conf, Seconds(10))
+
+      val sc = ssc.sparkContext
+      sc.setLogLevel("ERROR")
       //import spark.implicits._
 
       // From Spark 2.0.0 to onward use SparkSession (managing Context)
@@ -26,12 +29,12 @@ object Test {
       //val ssc = new StreamingContext(sc, Seconds(10))
 
       // Twitter App API Credentials - underlying twitter4j Library
-      System.setProperty("twitter4j.oauth.consumerKey", "jSy8GpuVcHqRXHqD76sDkiFZ0")
-      System.setProperty("twitter4j.oauth.consumerSecret", "J44aN1h2Y7VywV6iUrD91crNyM32AJB8W6ZDMYNHkt6nUYLUXB")
-      System.setProperty("twitter4j.oauth.accessToken", "2655466249-sr5XX9yJKN2tVH5bDEimxdPGLASaYVi4RB0MWxF")
-      System.setProperty("twitter4j.oauth.accessTokenSecret", "9g7AEwWFUneweaZeHj2WwdIhfXURc2fOgHLGeRwC3Ytgl")
+      System.setProperty("twitter4j.oauth.consumerKey", "blabla")
+      System.setProperty("twitter4j.oauth.consumerSecret", "blabla")
+      System.setProperty("twitter4j.oauth.accessToken", "blabla")
+      System.setProperty("twitter4j.oauth.accessTokenSecret", "blabla")
 
-      val filters = Seq("bitcoin")
+      val filters = Seq("$BTC")
       val twitterStream = TwitterUtils.createStream(ssc, None, filters)
       val englishTweets = twitterStream.filter(_.getLang == "en")
       englishTweets.map(_.getText).print()
