@@ -31,7 +31,7 @@ object Test {
       System.setProperty("twitter4j.oauth.accessToken", "2655466249-sr5XX9yJKN2tVH5bDEimxdPGLASaYVi4RB0MWxF")
       System.setProperty("twitter4j.oauth.accessTokenSecret", "9g7AEwWFUneweaZeHj2WwdIhfXURc2fOgHLGeRwC3Ytgl")
 
-      val filters = Seq("iphone","samsung galaxy")
+      val filters = Seq("bitcoin")
       val twitterStream = TwitterUtils.createStream(ssc, None, filters)
       val englishTweets = twitterStream.filter(_.getLang == "en")
       englishTweets.map(_.getText).print()
