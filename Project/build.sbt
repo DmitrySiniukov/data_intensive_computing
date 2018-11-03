@@ -11,3 +11,7 @@ libraryDependencies ++= Seq(
   ("com.datastax.cassandra" % "cassandra-driver-core" % "3.0.0").exclude("io.netty", "netty-handler"),
   "org.apache.bahir" %% "spark-streaming-twitter" % "2.0.0"
 )
+
+libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % "3.9.1"
+libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % "3.9.1" classifier "models"
+libraryDependencies += "edu.stanford.nlp" % "stanford-parser" % "3.9.1"
