@@ -5,3 +5,8 @@
 lab2/src/notebooks/data/
 lab2/src/hellospark/
 lab2/src/notebooks/.ipynb_checkpoints/
+
+Project/target
+Project/project/target
+Project/project/target/*
+Project/.ipynb_checkpoints

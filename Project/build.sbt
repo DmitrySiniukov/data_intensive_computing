@@ -15,3 +15,5 @@ libraryDependencies ++= Seq(
 libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % "3.9.1"
 libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % "3.9.1" classifier "models"
 libraryDependencies += "edu.stanford.nlp" % "stanford-parser" % "3.9.1"
+
+libraryDependencies += "org.elasticsearch" %% "elasticsearch-spark-20" % "5.0.2" excludeAll ExclusionRule(organization = "org.apache.spark")

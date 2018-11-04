@@ -9,6 +9,7 @@ import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
+import org.elasticsearch.spark._
 
 
 
@@ -38,10 +39,11 @@ object Test {
       //val ssc = new StreamingContext(sc, Seconds(10))
 
       // Twitter App API Credentials - underlying twitter4j Library
-      System.setProperty("twitter4j.oauth.consumerKey", "OfdkehLTNt5RPRco2rPuPTPZN")
-      System.setProperty("twitter4j.oauth.consumerSecret", "KWSBuYlfPIJ42StMEW3Be6jNb6ohXn9kDm6cKkRK8g98RGCVif")
-      System.setProperty("twitter4j.oauth.accessToken", "2655466249-BixeGG5lu1AXkc4TJMfGwmKv780FxdJiRM88iUM")
-      System.setProperty("twitter4j.oauth.accessTokenSecret", "Poyf01A8VCx3blxzv14RYyomltGMV03jxrpx1fRYGWqHP")
+      System.setProperty("twitter4j.oauth.consumerKey", "blabla")
+      System.setProperty("twitter4j.oauth.consumerSecret", "blabla")
+      System.setProperty("twitter4j.oauth.accessToken", "blabla")
+      System.setProperty("twitter4j.oauth.accessTokenSecret", "blabla")
+
 
       val filters = Seq("$BTC", "bitcoin")
       val twitterStream = TwitterUtils.createStream(ssc, None, filters)
@@ -79,14 +81,28 @@ object Test {
       //      dataRDD.union(rdd)
       })
       */
-
-      data.foreachRDD { rdd =>
+      
+      
+      twitterStream.foreachRDD{(rdd) =>
+       rdd.map(t => {
+         Map(
+           //"user"-> t.getUser.getScreenName,
+           "created_at" -> t.getCreatedAt.getTime.toString,
+           //"location" -> Option(t.getGeoLocation).map(geo => { s"${geo.getLatitude},${geo.getLongitude}" }),
+           "text" -> t.getText,
+           //"hashtags" -> t.getHashtagEntities.map(_.getText),
+           //"retweet" -> t.getRetweetCount,
+           //"language" -> t.getLang.toString(),
+           "sentiment" -> NLPManager.detectSentiment(t.getText).toString
+         )
+       }).saveToEs("twitter/tweet")
+      }
+      
+      data.foreachRDD { rdd => 
             rdd.toDF().registerTempTable("sentiments")
-            //rdd.show()
             sqlContext.sql("select * from sentiments limit 20").show()
       }
       
-
       ssc.start()
       ssc.awaitTermination()
    }

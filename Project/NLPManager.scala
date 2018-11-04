@@ -50,8 +50,8 @@ object NLPManager {
       sentiments += sentiment.toDouble
       sizes += partText.length
 
-      println("debug: " + sentiment)
-      println("size: " + partText.length)
+      //println("debug: " + sentiment)
+      //println("size: " + partText.length)
 
     }
 
@@ -69,9 +69,9 @@ object NLPManager {
     }
 
 
-    println("debug: main: " + mainSentiment)
-    println("debug: avg: " + averageSentiment)
-    println("debug: weighted: " + weightedSentiment)
+    //println("debug: main: " + mainSentiment)
+    //println("debug: avg: " + averageSentiment)
+    //println("debug: weighted: " + weightedSentiment)
 
     /*
      0 -> very negative
