@@ -2,6 +2,8 @@
   Based on work of Muhammad Furqan
 */
 
+package Project
+
 import java.util.Properties
 import edu.stanford.nlp.ling.CoreAnnotations
 import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations
