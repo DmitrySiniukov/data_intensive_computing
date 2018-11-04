@@ -63,7 +63,7 @@ object Test {
       */
       
       val data = englishTweets.map { tweet =>
-            val sentiment = NLPManager.detectSentiment(tweet.getText)
+            val sentiment = SentimentAnalyzer.extractSentiment(tweet.getText)
             (tweet.getText, sentiment.toString)
       }
 
@@ -95,7 +95,7 @@ object Test {
            //"hashtags" -> t.getHashtagEntities.map(_.getText),
            //"retweet" -> t.getRetweetCount,
            //"language" -> t.getLang.toString(),
-           "sentiment" -> NLPManager.detectSentiment(t.getText).toString
+           "sentiment" -> SentimentAnalyzer.extractSentiment(t.getText).toString
          )
        }).saveToEs("twitter/tweet")
       }
