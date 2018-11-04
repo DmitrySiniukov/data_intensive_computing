@@ -1,22 +1,14 @@
-
 /*
-  Twitter Stream Sentiment Analyzer
-  Apache Spark, Spark Stream, Spark SQL , Stanford NLP(Natural Language Processing)
-  Created By: Muhammad Furqan
-  Software Engineer (furqan_isl@hotmail.com)
+  Based on work of Muhammad Furqan
 */
 
-
 import java.util.Properties
-
 import edu.stanford.nlp.ling.CoreAnnotations
 import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations
-
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
-
 
 object NLPManager {
 
@@ -50,9 +42,6 @@ object NLPManager {
       sentiments += sentiment.toDouble
       sizes += partText.length
 
-      //println("debug: " + sentiment)
-      //println("size: " + partText.length)
-
     }
 
     val averageSentiment:Double = {
@@ -64,41 +53,23 @@ object NLPManager {
     var weightedSentiment = weightedSentiments.sum / sizes.sum
 
     if(sentiments.isEmpty) {
-      mainSentiment = -1
-      weightedSentiment = -1
+      weightedSentiment = 2.5
     }
 
-
-    //println("debug: main: " + mainSentiment)
-    //println("debug: avg: " + averageSentiment)
-    //println("debug: weighted: " + weightedSentiment)
-
-    /*
-     0 -> very negative
-     1 -> negative
-     2 -> neutral
-     3 -> positive
-     4 -> very positive
-     */
     weightedSentiment match {
       case s if s <= 0.0 => NOT_UNDERSTOOD
-      case s if s < 1.0 => VERY_NEGATIVE
       case s if s < 2.0 => NEGATIVE
       case s if s < 3.0 => NEUTRAL
-      case s if s < 4.0 => POSITIVE
-      case s if s < 5.0 => VERY_POSITIVE
-      case s if s > 5.0 => NOT_UNDERSTOOD
+      case s if s < 5.0 => POSITIVE
+      case s if s >= 5.0 => NOT_UNDERSTOOD
     }
 
   }
 
   trait SENTIMENT_TYPE
-  case object VERY_NEGATIVE extends SENTIMENT_TYPE
   case object NEGATIVE extends SENTIMENT_TYPE
   case object NEUTRAL extends SENTIMENT_TYPE
   case object POSITIVE extends SENTIMENT_TYPE
-  case object VERY_POSITIVE extends SENTIMENT_TYPE
   case object NOT_UNDERSTOOD extends SENTIMENT_TYPE
-
 
 }
