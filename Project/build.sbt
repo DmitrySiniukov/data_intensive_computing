@@ -12,8 +12,7 @@ libraryDependencies ++= Seq(
   "org.apache.bahir" %% "spark-streaming-twitter" % "2.0.0"
 )
 
-libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % "3.9.1"
-libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % "3.9.1" classifier "models"
-libraryDependencies += "edu.stanford.nlp" % "stanford-parser" % "3.9.1"
-
 libraryDependencies += "org.elasticsearch" %% "elasticsearch-spark-20" % "5.0.2" excludeAll ExclusionRule(organization = "org.apache.spark")
+
+libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % "3.5.2" artifacts (Artifact("stanford-corenlp", "models"), Artifact("stanford-corenlp"))
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % "test"
