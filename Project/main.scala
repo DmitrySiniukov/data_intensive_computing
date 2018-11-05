@@ -19,7 +19,17 @@ import java.util.Calendar
 object CryptoSentiment {
 
    def main(args: Array[String]) {
-
+      
+      // Input twitter credentials
+      println("Enter consumer API key:")
+      val consumerKey = scala.io.StdIn.readLine()
+      println("Enter consumer API key secret:")
+      val consumerKeySecret = scala.io.StdIn.readLine()
+      println("Enter access token:")
+      val accessToken = scala.io.StdIn.readLine()
+      println("Enter access token secret:")
+      val accessTokenSecret = scala.io.StdIn.readLine()
+      
       // Initialize
       val config = new SparkConf().setMaster("local[*]").setAppName("twitter-crypto-sentiment")
       val sc = new SparkContext(config)       
@@ -29,10 +39,10 @@ object CryptoSentiment {
       sc.setLogLevel("ERROR")
 
       // Set Twitter API credentials
-      System.setProperty("twitter4j.oauth.consumerKey", "blabla")
-      System.setProperty("twitter4j.oauth.consumerSecret", "blabla")
-      System.setProperty("twitter4j.oauth.accessToken", "blabla")
-      System.setProperty("twitter4j.oauth.accessTokenSecret", "blabla")
+      System.setProperty("twitter4j.oauth.consumerKey", consumerKey)
+      System.setProperty("twitter4j.oauth.consumerSecret", consumerKeySecret)
+      System.setProperty("twitter4j.oauth.accessToken", accessToken)
+      System.setProperty("twitter4j.oauth.accessTokenSecret", accessTokenSecret)
 
       // Filter tweets. We want bitcoin related, in english (for NLP)
       val filters = Seq("Bitcoin", "$BTC")
