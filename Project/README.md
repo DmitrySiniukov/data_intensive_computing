@@ -12,6 +12,8 @@ sudo apt-get install kibana
 ### Start
 sudo service kibana start
 
+## Run the main app
+sbt run
 
 # Delete all index in elasticsearch
 curl -X DELETE 'http://localhost:9200/_all'
