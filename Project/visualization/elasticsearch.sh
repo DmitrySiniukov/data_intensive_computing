@@ -1,4 +1,4 @@
-curl -XPUT http://localhost:9200/twitter -d '
+curl -XPUT http://localhost:9200/sentiments -d '
 {  
    "mappings":{  
       "tweet":{  
@@ -6,13 +6,20 @@ curl -XPUT http://localhost:9200/twitter -d '
             "created_at":{  
                "type":"date"
             },
-            "sentiment":{  
-               "type":"string"
-            },
             "text":{  
                "type":"string"
+            },
+            "sentiment":{  
+               "type":"keyword"
+            },
+            "sentiment_int":{  
+               "type":"integer"
+            },
+            "price":{  
+               "type":"double"
             }
          }
       }
    }
 }'
+
